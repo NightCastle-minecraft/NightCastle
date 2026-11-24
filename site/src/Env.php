@@ -31,4 +31,10 @@ final class Env
     {
         return rtrim(self::get('SITE_URL', 'https://example.com'), '/');
     }
+
+    /** Адрес сервера для игроков: GAME_ADDRESS из окружения, иначе домен сайта. */
+    public static function gameAddress(): string
+    {
+        return self::get('GAME_ADDRESS', (string) parse_url(self::siteUrl(), PHP_URL_HOST));
+    }
 }

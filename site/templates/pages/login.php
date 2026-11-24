@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
+use SiteGate\Env;
+use SiteGate\Settings;
+
 /** @var string|null $error */
 /** @var string $name */
 /** @var string $csrf */
+
+$gameAddress = Settings::get('display_ip') ?: Env::gameAddress();
 ?>
 <section class="container section auth-page">
     <div class="card form-card">
@@ -24,6 +29,6 @@ declare(strict_types=1);
             <button class="btn btn-primary" type="submit">Войти</button>
         </form>
         <p class="muted small"><a href="/password/forgot">Забыли пароль?</a></p>
-        <p class="muted small">Аккаунта ещё нет? <a href="/register">Зарегистрируйтесь</a> или просто зайдите на сервер <code>example.com</code> в Minecraft Java 26.3: игра сама покажет кнопку регистрации. <a href="/start">Подробнее</a></p>
+        <p class="muted small">Аккаунта ещё нет? <a href="/register">Зарегистрируйтесь</a> или просто зайдите на сервер <code><?= e($gameAddress) ?></code> в Minecraft Java 26.3: игра сама покажет кнопку регистрации. <a href="/start">Подробнее</a></p>
     </div>
 </section>

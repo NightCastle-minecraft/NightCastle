@@ -6,6 +6,8 @@ infra/secrets/
 infra/servers/
 infra/backups/
 infra/panel/data/
+# Локальные дополнения к compose.yml (INSTALL.md, шаг 6)
+infra/compose.override.yml
 
 # Сборка и зависимости
 site/vendor/
@@ -15,3 +17,6 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# Gradle при сборке в Docker на VPS (INSTALL.md, шаг 9)
+.gradle-home/

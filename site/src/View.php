@@ -19,7 +19,7 @@ final class View
     public static function render(string $name, array $data = [], string $layout = 'layout'): string
     {
         $content = self::partial($name, $data);
-        return self::partial($layout, $data + ['title' => 'MyServer'] + ['content' => $content]);
+        return self::partial($layout, $data + ['title' => Settings::get('server_name', 'MyServer')] + ['content' => $content]);
     }
 
     /**

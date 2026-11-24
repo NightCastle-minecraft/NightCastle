@@ -39,7 +39,10 @@
 ## Документация
 | Файл | Что внутри |
 |---|---|
-| [INSTALL.md](INSTALL.md) | Установка с нуля на VPS, по шагам |
+| [INSTALL.md](INSTALL.md) | **Начните отсюда.** Установка с нуля на VPS: 19 шагов, после каждого проверка |
+| [CONFIGURATION.md](CONFIGURATION.md) | Справочник по каждой настройке: `.env`, compose, плагины, сайт, почта, панель |
+| [OPERATIONS.md](OPERATIONS.md) | Жизнь сервера: бэкапы и восстановление, обновления, смена токенов, переезд на другой VPS |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Что делать, если не работает: симптом → причина → решение |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Как всё устроено и почему так |
 | [AUTH-API.md](AUTH-API.md) | API между SiteGateAuth и сайтом |
 | [SHOP-API.md](SHOP-API.md) | API между SiteGateShop и сайтом |

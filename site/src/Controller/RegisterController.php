@@ -8,9 +8,11 @@ use SiteGate\Auth;
 use SiteGate\Csrf;
 use SiteGate\DbAttemptStore;
 use SiteGate\EmailFlow;
+use SiteGate\Env;
 use SiteGate\PlayerAuth;
 use SiteGate\Players;
 use SiteGate\RateLimit;
+use SiteGate\Settings;
 use SiteGate\View;
 
 /**
@@ -91,7 +93,8 @@ final class RegisterController
         PlayerAuth::flash((EmailFlow::sendVerify($account)
             ? 'Аккаунт ' . $name . ' создан! На ' . $email . ' ушло письмо для подтверждения почты. '
             : 'Аккаунт ' . $name . ' создан, но письмо на ' . $email . ' не ушло: отправьте его ещё раз ниже. ')
-            . 'Чтобы играть, зайдите на сервер example.com: игра покажет кнопку входа, а на сайте введёте этот пароль.');
+            . 'Чтобы играть, зайдите на сервер ' . (Settings::get('display_ip') ?: Env::gameAddress())
+            . ': игра покажет кнопку входа, а на сайте введёте этот пароль.');
         Auth::redirect('/account');
     }
 

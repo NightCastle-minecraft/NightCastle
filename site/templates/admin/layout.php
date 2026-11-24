@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use SiteGate\Settings;
+
 /** @var string $title */
 /** @var string $content */
 /** @var array{id: int, username: string}|null $admin */
@@ -30,7 +32,7 @@ $nav = [
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title><?= e($title . ' · MyServer admin') ?></title>
+    <title><?= e($title . ' · ' . Settings::get('server_name', 'MyServer') . ' admin') ?></title>
     <meta name="theme-color" content="#0b0d14">
     <link rel="icon" href="<?= e(asset('/favicon.ico')) ?>" sizes="16x16 32x32 48x48">
     <link rel="icon" type="image/png" sizes="32x32" href="<?= e(asset('/assets/img/favicon-32.png')) ?>">
