@@ -29,7 +29,7 @@ import org.slf4j.Logger;
     name = "SiteGateAuth",
     version = SiteGateAuthPlugin.VERSION,
     description = "Вход на Minecraft-сервер через сайт: капча и подтверждение в браузере",
-    url = "https://github.com/FeniksGames/NightCastle",
+    url = "https://github.com/NightCastle-minecraft/NightCastle",
     authors = {"FeniksGames"})
 public final class SiteGateAuthPlugin {
 

@@ -46,7 +46,7 @@ docker compose version     # нужен Compose v2
 ### 1.2. Код
 ```bash
 sudo mkdir -p /opt/sitegate && sudo chown $USER:$USER /opt/sitegate
-git clone https://github.com/FeniksGames/NightCastle.git /opt/sitegate
+git clone https://github.com/NightCastle-minecraft/NightCastle.git /opt/sitegate
 cd /opt/sitegate/infra
 ```
 Дальше почти все команды выполняются из `/opt/sitegate/infra`.
@@ -163,7 +163,7 @@ Leaf при самом первом запуске может создать т�
 
 Теперь сборка:
 ```bash
-git clone https://github.com/FeniksGames/NightCastle.git && cd NightCastle/plugins
+git clone https://github.com/NightCastle-minecraft/NightCastle.git && cd NightCastle/plugins
 export JAVA_HOME=/путь/к/jdk-25          # если java по умолчанию не 25
 ./gradlew build -PserverLibs=$HOME/mc-libs/libraries
 ```
