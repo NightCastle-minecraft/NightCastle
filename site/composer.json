@@ -1,0 +1,31 @@
+{
+    "name": "sitegate/site",
+    "description": "Сайт сервера Minecraft MyServer: вход в игру через сайт, личный кабинет",
+    "type": "project",
+    "require": {
+        "php": ">=8.3",
+        "ext-pdo": "*",
+        "league/commonmark": "^2.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SiteGate\\": "src/"
+        },
+        "files": ["src/helpers.php"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SiteGate\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.0"
+        },
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
+}

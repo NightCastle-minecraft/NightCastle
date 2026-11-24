@@ -1,0 +1,19 @@
+# Пример товара. Код = имя файла без .yml: здесь example_diamonds.
+# В админке сайта заведите товар с тем же кодом, ценой и описанием.
+#
+# require-online: true  — выдать, только когда игрок в игре (предметы в инвентарь).
+#                 false — выдать сразу, даже если игрок не в игре (права LuckPerms, валюта и т.п.).
+# commands выполняются от консоли по порядку. Подстановки: {player}, {uuid}, {order}, {title}.
+# message — сообщение игроку после выдачи (если он в игре). Пусто = стандартное из config.yml.
+require-online: true
+commands:
+  - "give {player} minecraft:diamond 16"
+message: "<green>Спасибо за покупку! Вам выдано 16 алмазов.</green>"
+
+# Ещё примеры (каждый в своём файле):
+#   VIP на 30 дней (products/vip_30d.yml):
+#     require-online: false
+#     commands: ["lp user {player} parent addtemp vip 30d"]
+#   500 очков PlayerPoints (products/points_500.yml):
+#     require-online: false
+#     commands: ["points give {player} 500"]

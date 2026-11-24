@@ -1,0 +1,83 @@
+# Сайт SiteGate: Caddy (образ с плагином caddy-ratelimit) → web (PHP 8.3 + Apache).
+# Email для ACME не задаём: пустой ломал выпуск сертификата. Логи в stdout.
+{
+	log {
+		output stdout
+		format console
+	}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		# Сайт доступен только по HTTPS (HTTP Caddy редиректит)
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	# Лимит запросов на IP. API плагина SiteGateAuth не трогаем: прокси опрашивает тикеты
+	# раз в 3 секунды на каждого ждущего игрока, лимит его бы душил.
+	rate_limit {
+		zone all_per_ip {
+			match {
+				not path /api/auth/* /api/stats/* /api/server/*
+			}
+			key    {remote_host}
+			events 120
+			window 1m
+		}
+		zone login_per_ip {
+			match {
+				method POST
+				path /admin/login /login /auth/*
+			}
+			key    {remote_host}
+			events 20
+			window 1m
+		}
+	}
+
+	# Рипперы по User-Agent -> 403. curl, поисковики и SiteGateAuth не трогаем.
+	@rippers header_regexp User-Agent "(?i)(httrack|wget|webcopier|webzip|teleport|offline explorer|sitesucker|webstripper|webreaper|website downloader|python-requests|python-urllib|scrapy|go-http-client|libwww-perl|aria2)"
+	handle @rippers {
+		respond 403
+	}
+
+	# Служебное -> 404. Dotfiles кроме /.well-known/ (нужен ACME).
+	@dotfiles {
+		path_regexp (^|/)\.
+		not path /.well-known/*
+	}
+	@sensitive path_regexp (?i)(\.(sql|bak|old|swp|zip|tar|tgz|gz|md|log|ini|yml|yaml)$|(^|/)(composer\.(json|lock)|dockerfile)$|^/(vendor|src|templates|migrations|bin|tests)(/|$))
+	handle @dotfiles {
+		respond 404
+	}
+	handle @sensitive {
+		respond 404
+	}
+
+	# Хотлинк-защита загрузок: чужой Referer -> 403, пустой пропускаем
+	@hotlink {
+		path /uploads/*
+		header Referer *
+		not expression `{http.request.header.Referer}.matches('^https?://' + {http.request.host} + '(:[0-9]+)?(/|$)')`
+	}
+	handle @hotlink {
+		respond 403
+	}
+
+	@static path /assets/* /uploads/*
+	handle @static {
+		header >Cache-Control "public, max-age=604800"
+		reverse_proxy web:80
+	}
+
+	handle {
+		reverse_proxy web:80
+	}
+}
+
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}

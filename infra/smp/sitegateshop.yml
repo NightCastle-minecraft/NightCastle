@@ -1,0 +1,26 @@
+# SiteGateShop: выдача покупок из магазина на сайте.
+# Товары и цены заводятся в админке сайта (/admin/shop). Что именно выдать, описывают файлы
+# в папке products/: код товара = имя файла без .yml. Пример: products/example_diamonds.yml.
+
+site:
+  # Адрес сайта, без слэша в конце
+  url: "https://example.com"
+  # Токен API магазина: тот же, что SHOP_API_TOKEN у сайта. Пустой = магазин выключен.
+  token: ""
+  # Или файл с токеном (docker secret). Задавайте что-то одно.
+  token-file: "/run/secrets/shop_api_token"
+  timeout-seconds: 5
+
+# Как часто спрашивать сайт о новых покупках, в секундах
+poll-seconds: 15
+
+# Тексты в MiniMessage: https://docs.advntr.dev/minimessage/format.html
+messages:
+  prefix: "<light_purple><b>SiteGateShop</b></light_purple> <dark_gray>»</dark_gray> "
+  balance: "Баланс: <white><b><balance></b></white> монет. <click:open_url:'<url>'><aqua><u>Открыть магазин</u></aqua></click>"
+  not-registered: "Аккаунта на сайте пока нет: он появится после первого входа через сайт."
+  site-down: "<red>Сайт магазина сейчас недоступен, попробуйте позже.</red>"
+  delivered: "<green>Покупка «<title>» выдана. Спасибо!</green>"
+  reloaded: "Товары перечитаны: <count> шт."
+  disabled: "<red>Магазин на сервере не настроен.</red>"
+  no-permission: "<red>Нет прав.</red>"

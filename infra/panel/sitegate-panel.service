@@ -1,0 +1,20 @@
+# Панель SiteGate: 127.0.0.1:8780, открывается через SSH-туннель: ssh -L 8780:127.0.0.1:8780 ваш-vps
+# Установка: sudo cp panel/sitegate-panel.service /etc/systemd/system/ && sudo systemctl enable --now sitegate-panel
+[Unit]
+Description=SiteGate panel (127.0.0.1:8780)
+After=docker.service network-online.target
+Wants=docker.service
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/sitegate/infra/panel
+ExecStart=/usr/bin/python3 /opt/sitegate/infra/panel/panel.py
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

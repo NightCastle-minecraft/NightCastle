@@ -1,0 +1,265 @@
+/* Админка: токены (--bg, --text, --accent, ...) приходят из main.css */
+.admin-body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.admin-main {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+}
+
+.admin-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+}
+
+.admin-title {
+  margin: 0 0 var(--space-4);
+  font-size: 1.5rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.admin-label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.admin-input {
+  padding: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.admin-input:focus-visible,
+.admin-btn:focus-visible,
+.admin-link:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+.admin-btn {
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-btn:hover {
+  background: var(--accent-strong);
+}
+
+.admin-error {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--offline);
+  border-radius: var(--radius-sm);
+  color: var(--offline);
+}
+
+.admin-link {
+  color: var(--accent-strong);
+}
+
+.admin-main--wide {
+  max-width: 56rem;
+}
+
+.admin-header {
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--bg-soft);
+}
+
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+.admin-nav-link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.admin-nav-link:hover,
+.admin-nav-link.is-active {
+  background: var(--glass-bg);
+  color: var(--text);
+}
+
+.admin-nav-link:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+.admin-nav-form {
+  margin: 0 0 0 auto;
+}
+
+.admin-nav-button {
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-section {
+  margin-top: var(--space-4);
+}
+
+.admin-subtitle {
+  margin: 0 0 var(--space-3);
+  font-size: 1.1rem;
+}
+
+.admin-muted {
+  color: var(--text-muted);
+}
+
+.admin-flash {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--online);
+  border-radius: var(--radius-sm);
+  color: var(--online);
+}
+
+.admin-field-error {
+  margin: calc(-1 * var(--space-2)) 0 0;
+  color: var(--offline);
+  font-size: 0.9rem;
+}
+
+.admin-input.is-invalid {
+  border-color: var(--offline);
+}
+
+.admin-textarea {
+  min-height: 16rem;
+  resize: vertical;
+}
+
+.admin-check {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.admin-btn--ghost {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent-strong);
+}
+
+.admin-preview {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+.admin-preview-body {
+  overflow-wrap: anywhere;
+}
+
+.admin-stats,
+.admin-list {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--glass-border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+/* T11 news */
+a.admin-btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.news-admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* T12 rules */
+.admin-rule-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.admin-rule-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.admin-inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.admin-rule-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--glass-border);
+}
+
+.admin-rule-num {
+  flex: 0 0 3rem;
+  font-weight: 600;
+}
+
+.admin-rule-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}

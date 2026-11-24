@@ -1,0 +1,176 @@
+# Стек SiteGate на VPS: сайт, прокси Velocity с SiteGateAuth, SMP.
+# Репозиторий клонируется в /opt/sitegate, стек запускается из /opt/sitegate/infra: docker compose up -d
+# Порты и решения описаны в README.md. Базы данных живут на внешнем хостинге (3 базы), здесь их нет.
+
+name: sitegate
+
+services:
+  # Caddy: HTTPS для DOMAIN и www, лимиты, отдаёт сайт из web.
+  # Образ с плагином caddy-ratelimit собирается из ../site/docker/caddy.
+  site:
+    image: sitegate-caddy:local
+    build: ../site/docker/caddy
+    container_name: sg-site
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN не задан в .env}
+    volumes:
+      - ./site/Caddyfile:/etc/caddy/Caddyfile:ro
+      - sg-site-data:/data
+      - sg-site-config:/config
+    depends_on: [web]
+    mem_limit: 128m
+    networks:
+      sg:
+        # SiteGateAuth ходит на https://DOMAIN прямо по внутренней сети, без петли через внешний IP
+        aliases: ["${DOMAIN}"]
+
+  # Сайт: PHP 8.3 + Apache, код из ../site.
+  web:
+    build: ../site
+    image: sitegate-web:latest
+    container_name: sg-web
+    restart: unless-stopped
+    environment:
+      SITE_URL: https://${DOMAIN}
+      TRUSTED_PROXY: site
+      AUTH_API_TOKEN_FILE: /run/secrets/auth_api_token
+      SHOP_API_TOKEN_FILE: /run/secrets/shop_api_token
+      # Письма (D18): свой Postfix в контейнере mail, наружу он не открыт
+      MAIL_HOST: mail
+      MAIL_PORT: "587"
+      MAIL_FROM: noreply@${DOMAIN}
+      MAIL_FROM_NAME: ${SITE_NAME:-MyServer}
+      SITE_NAME: ${SITE_NAME:-MyServer}
+      GAME_ADDRESS: ${GAME_ADDRESS:-}
+      MAIL_HELO: ${DOMAIN}
+      DB1_HOST: ${DB1_HOST:?DB1_HOST не задан в .env}
+      DB1_PORT: ${DB1_PORT:-3306}
+      DB1_NAME: ${DB1_NAME:?}
+      DB1_USER: ${DB1_USER:?}
+      DB1_PASSWORD: ${DB1_PASSWORD:?}
+      DB2_HOST: ${DB2_HOST:?DB2_HOST не задан в .env}
+      DB2_PORT: ${DB2_PORT:-3306}
+      DB2_NAME: ${DB2_NAME:?}
+      DB2_USER: ${DB2_USER:?}
+      DB2_PASSWORD: ${DB2_PASSWORD:?}
+      DB3_HOST: ${DB3_HOST:?DB3_HOST не задан в .env}
+      DB3_PORT: ${DB3_PORT:-3306}
+      DB3_NAME: ${DB3_NAME:?}
+      DB3_USER: ${DB3_USER:?}
+      DB3_PASSWORD: ${DB3_PASSWORD:?}
+    secrets: [auth_api_token, shop_api_token]
+    volumes:
+      - sg-web-uploads:/var/www/html/public/uploads
+    mem_limit: 320m
+    networks: [sg]
+
+  # Почта: Postfix только на отправку + DKIM. Портов наружу НЕТ: иначе это открытый релей для спама.
+  # Письма принимает только от контейнеров сети sg (сайт). Ключ DKIM генерится при первом старте и живёт в томе.
+  mail:
+    image: boky/postfix:5.2.1-alpine
+    container_name: sg-mail
+    restart: unless-stopped
+    hostname: mail.${DOMAIN}
+    environment:
+      ALLOWED_SENDER_DOMAINS: ${DOMAIN}
+      POSTFIX_myhostname: mail.${DOMAIN}
+      POSTFIX_inet_protocols: ipv4
+      POSTFIX_message_size_limit: "10240000"
+      DKIM_AUTOGENERATE: "true"
+      DKIM_SELECTOR: sg1
+    volumes:
+      - sg-mail-dkim:/var/lib/rspamd
+      - sg-mail-spool:/var/spool/postfix
+    # rspamd (DKIM) сам по себе ест ~160 МБ
+    mem_limit: 256m
+    networks: [sg]
+
+  # Прокси Velocity 4.3.1 (build 45) + SiteGateAuth. Единственный вход в игру.
+  # Java берём из образа itzg (тот же, что у SMP), jar и конфиги лежат в ./servers/proxy.
+  proxy:
+    image: itzg/minecraft-server:2026.11.0-java25
+    container_name: sg-proxy
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    user: "1000:1000"
+    working_dir: /proxy
+    entrypoint:
+      - java
+      - -Xms320M
+      - -Xmx320M
+      - -XX:+UseG1GC
+      - -XX:G1HeapRegionSize=4M
+      - -XX:+UnlockExperimentalVMOptions
+      - -XX:+ParallelRefProcEnabled
+      - -XX:+AlwaysPreTouch
+      - -XX:MaxInlineLevel=15
+      - -jar
+      - velocity.jar
+    ports:
+      - "25565:25565"
+    secrets: [auth_api_token, forwarding_secret]
+    volumes:
+      - ./servers/proxy:/proxy
+    depends_on: [smp, site]
+    mem_limit: 640m
+    networks: [sg]
+
+  # SMP: Leaf 26.3, ваш server.jar и плагины. Мир, плагины и конфиги лежат в ./servers/SMP.
+  # Портов наружу нет: заходят только через прокси (иначе вход в обход SiteGateAuth под любым ником).
+  smp:
+    image: itzg/minecraft-server:2026.11.0-java25
+    container_name: sg-smp
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    stop_grace_period: 2m
+    environment:
+      EULA: "TRUE"
+      TYPE: CUSTOM
+      CUSTOM_SERVER: /data/server.jar
+      MEMORY: ${SMP_MEMORY:-5G}
+      USE_AIKAR_FLAGS: "true"
+      TZ: Europe/Kyiv
+      # server.properties правится руками, itzg его не перетирает.
+      OVERRIDE_SERVER_PROPERTIES: "false"
+      # Для rcon-cli. Сам RCON настроен в server.properties: порт 25700, только внутри сети.
+      RCON_PORT: "25700"
+      RCON_PASSWORD_FILE: /run/secrets/rcon_pass
+    # shop_api_token читает плагин SiteGateShop (plugins/SiteGateShop/config.yml: token-file)
+    secrets: [rcon_pass, shop_api_token]
+    volumes:
+      - ./servers/SMP:/data
+    mem_limit: 6500m
+    networks: [sg]
+
+networks:
+  sg:
+    name: sg-network
+
+volumes:
+  sg-site-data:
+    name: sg-site-data
+  sg-site-config:
+    name: sg-site-config
+  sg-web-uploads:
+    name: sg-web-uploads
+  sg-mail-dkim:
+    name: sg-mail-dkim
+  sg-mail-spool:
+    name: sg-mail-spool
+
+secrets:
+  rcon_pass:
+    file: ./secrets/rcon_pass
+  auth_api_token:
+    file: ./secrets/auth_api_token
+  forwarding_secret:
+    file: ./secrets/forwarding_secret
+  shop_api_token:
+    file: ./secrets/shop_api_token

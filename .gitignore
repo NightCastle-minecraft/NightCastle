@@ -1,0 +1,17 @@
+# Секреты и данные сервера: только на VPS, в git никогда
+.env
+.env.*
+!.env.example
+infra/secrets/
+infra/servers/
+infra/backups/
+infra/panel/data/
+
+# Сборка и зависимости
+site/vendor/
+site/.phpunit.cache/
+site/public/uploads/*
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

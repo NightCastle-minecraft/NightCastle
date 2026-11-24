@@ -1,0 +1,15 @@
+name: SiteGateShop
+version: '${version}'
+main: io.github.feniksgames.sitegate.shop.SiteGateShopPlugin
+api-version: '1.13'
+description: Выдача покупок из магазина на сайте (SiteGate)
+authors: [FeniksGames]
+website: https://github.com/FeniksGames/NightCastle
+commands:
+  shop:
+    description: Баланс и ссылка на магазин
+    usage: /shop | /shop reload
+permissions:
+  sitegateshop.admin:
+    description: /shop reload
+    default: op
